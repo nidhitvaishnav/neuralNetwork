@@ -1,4 +1,5 @@
 import pandas as pd
+from pandas.core.dtypes.missing import na_value_for_dtype
 
 
 class MyIO:
@@ -12,16 +13,15 @@ class MyIO:
     def inputCSV(self, filePath):
         """
         given method takes csv file path as an input; reads csv file and
-        return data in the form of numpy array
+        return data in the form of pandas dataframe
         """
 #         inputObj = pd.read_csv(filepath_or_buffer  = filePath, header = None,\
 #                                                          delimiter = '\t')
-        inputObj = pd.read_csv(filepath_or_buffer  = filePath, header = None)
-        inputArr = inputObj.values
-        
+        inputDataFrame = pd.read_csv(filepath_or_buffer = filePath, header = None,\
+                                        na_values = "?", skipinitialspace = True)        
 #         inputHeader = inputObj.columns.tolist()
         
-        inputDataList = inputArr.tolist()   
-        return inputDataList
+#         inputDataList = inputDataFrame.tolist()   
+        return inputDataFrame
 #|------------------------inputCSV -ends---------------------------------------|
 

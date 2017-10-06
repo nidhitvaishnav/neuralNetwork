@@ -15,33 +15,36 @@ class DataProcessingUI:
                  provide headers, so we are providing our own headers
         2. pre-process it by 
             1. removing null values,
-            3. cleansing the data set of any wrong values
             2. converting categorical / nominal values into numerical values,
             3. scaling data if required
         """
         
         myIO = MyIO()
-        inputDataList = myIO.inputCSV(filePath = inputFilePath)
+        inputDataFrame = myIO.inputCSV(filePath = inputFilePath)
+
         #debug
-        print ('inputDataList:\n')
-        for data in inputDataList:
-            print ("{}".format(data))
+        print ('inputDataFrame = {} '.format(inputDataFrame))
         #debug -ends
-#         inputArr = np.array(inputDataList)
-#         #debug
-#         print ('inputArr = {} '.format(inputArr))
-#         #debug -ends
-        
         dataProcess = DataPreprocess()
-        listWithoutNull = dataProcess.removeNullValues(inputDataList = \
-                                                                inputDataList)
+        headerList = dataProcess.provideHeaders(inputDataFrame =inputDataFrame)
+        #debug
+        print ('headerList = {} '.format(headerList))
+        #debug -ends
+        inputDataFrame.columns = headerList
+        #debug
+        print ('---------------------')
+        print ('inputArr = \n{} '.format(inputDataFrame.head(10)))
+        print ('---------------------')
+        #debug -ends
+        nullRemovedDataFrame = dataProcess.removeNullValues(inputDataFrame = \
+                                                            inputDataFrame)
+        #debug
+        print ('nullRemovedDataFrame.head(10) = {} '.format(nullRemovedDataFrame.head(10)))
+        #debug -ends
+        refinedDataFrame = dataProcess.categoricalToNumericalConversion(\
+                                            rawDataFrame = nullRemovedDataFrame)
         
 #|------------------------dataProcessing -ends----------------------------------|    
-
-
-
-
-
 
 
 
@@ -63,7 +66,9 @@ if __name__ == '__main__':
         inputFilePath = sys.argv[1]
         outputFilePath = sys.argv[2]
     else:
-        inputFilePath = '../dataset/trDataset.csv'
+#         inputFilePath = 'https://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data'
+#         inputFilePath = 'https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data'
+        inputFilePath = 'https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data'
         outputFilePath = '../dataset/processedTrDataset.csv'
     #if len(sys.argv) -ends
     
