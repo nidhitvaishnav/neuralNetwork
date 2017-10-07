@@ -1,6 +1,4 @@
 import pandas as pd
-from pandas.core.dtypes.missing import na_value_for_dtype
-
 
 class MyIO:
     """
@@ -10,7 +8,7 @@ class MyIO:
 #|-----------------------------------------------------------------------------|
 # inputCSV
 #|-----------------------------------------------------------------------------|
-    def inputCSV(self, filePath):
+    def inputCSVFromURL(self, filePath):
         """
         given method takes csv file path as an input; reads csv file and
         return data in the form of pandas dataframe
@@ -24,4 +22,13 @@ class MyIO:
 #         inputDataList = inputDataFrame.tolist()   
         return inputDataFrame
 #|------------------------inputCSV -ends---------------------------------------|
-
+#|-----------------------------------------------------------------------------|
+# writeCSV
+#|-----------------------------------------------------------------------------|
+    def writeCSV(self, inputDataFrame, outputFilePath):
+        """
+        given function uses pandas library as input and write csv file with 
+        default delimeter ','
+        """
+        inputDataFrame.to_csv(outputFilePath, index = False)
+#|------------------------writeCSV -ends----------------------------------|    
