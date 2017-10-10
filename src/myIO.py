@@ -13,15 +13,24 @@ class MyIO:
         given method takes csv file path as an input; reads csv file and
         return data in the form of pandas dataframe
         """
-#         inputObj = pd.read_csv(filepath_or_buffer  = filePath, header = None,\
-#                                                          delimiter = '\t')
+
         inputDataFrame = pd.read_csv(filepath_or_buffer = filePath, header = None,\
                                         na_values = "?", skipinitialspace = True)        
-#         inputHeader = inputObj.columns.tolist()
-        
-#         inputDataList = inputDataFrame.tolist()   
+   
         return inputDataFrame
 #|------------------------inputCSV -ends---------------------------------------|
+#|-----------------------------------------------------------------------------|
+# inputProcessedCSV
+#|-----------------------------------------------------------------------------|
+    def inputProcessedCSV(self, filePath):
+        """
+        given function reads csv file and returns data in the form of pandas 
+        data frame
+        """
+        inputDataframe  = pd.read_csv(filepath_or_buffer = filePath)
+        return inputDataframe
+    
+#|------------------------inputProcessedCSV -ends----------------------------------|    
 #|-----------------------------------------------------------------------------|
 # writeCSV
 #|-----------------------------------------------------------------------------|
@@ -31,4 +40,4 @@ class MyIO:
         default delimeter ','
         """
         inputDataFrame.to_csv(outputFilePath, index = False)
-#|------------------------writeCSV -ends----------------------------------|    
+#|------------------------writeCSV -ends---------------------------------------|    
