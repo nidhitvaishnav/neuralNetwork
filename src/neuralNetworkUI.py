@@ -1,6 +1,7 @@
 import sys
 from myIO import MyIO
 from myUtility import MyUtility
+from neuralNetwork import NeuralNetwork
 
 
 class NeuralNetworkUI:
@@ -19,7 +20,7 @@ class NeuralNetworkUI:
             a. take weights randomly for hidden and output layers
         3. forward propogation
             a. neuron activation: sigma(wi*xi)
-            b. neuron transfer : sigmoid function
+            b. neuron transfer : sigmoid function 1/(1+e(-x))
         4. back propogation
             a. transfer derivative
             b. error back propogation
@@ -38,9 +39,50 @@ class NeuralNetworkUI:
         
         #1. split dataset into training and testing dataset\
         myUtility = MyUtility()
-        myUtility.splitDataset(inputDataFrame = inputDataFrame,\
+        trainingDataFrame, testingDataFrame = myUtility.splitDataset(\
+                                            inputDataFrame = inputDataFrame,\
                                             trainingPercent = trainingPercent)
         
+        #2. initializeNeuralNetwork
+        uniqueClasses = inputDataFrame['class'].unique()
+        numOfUniqueClasses = uniqueClasses.size
+        
+        #debug
+        print ('numOfUniqueClasses = {} '.format(numOfUniqueClasses))
+        #debug -ends
+        
+        trainingDataArr = trainingDataFrame.values
+        testingDataArr = testingDataFrame.values
+        
+        #debug
+        print ('trainingDataArr = \n{} '.format(trainingDataArr.shape))
+        print("TestingDataArr = \n{}".format(testingDataArr.shape))
+        #debug -ends
+        
+        nRows, nCols = trainingDataArr.shape
+        
+        neuralNetwork = NeuralNetwork( nInputs = nCols-1,\
+                                       nHiddenLayers = nHiddenLayers, \
+                                       nNeurons = nNeurons, \
+                                       nOutputs = numOfUniqueClasses)
+        
+        #debug
+        print ('networkDict =\n {} '.format(neuralNetwork.networkDict))
+#         print ('outputWeightDict =\n {} '.format(neuralNetwork.outputWeightDict))
+        #debug -ends
+        
+        #3. forword propogation
+        outputs = neuralNetwork.forwardPropagation(inputRow = trainingDataArr[0])
+        #debug
+        print ('=========================================================')
+        print ('outputs = {} '.format(outputs))
+        print ('=========================================================')
+        #debug -ends
+
+        #4. back propogation
+        neuralNetwork.findBackwardPropagationError(targetValue = [1,0,0])
+        
+
 #|------------------------createNeuralNetwork -ends----------------------------|    
 
 
@@ -70,8 +112,8 @@ if __name__ == '__main__':
         inputFilePath = '../dataset/processedTrDataset.csv'
         trainingPercent = 80
         maxItr = 200
-        nHiddenLayers = 1
-        nNeurons = 3
+        nHiddenLayers = 2
+        nNeurons = 2
     #if len(sys.argv) -ends
     
     neuralNetworkUI = NeuralNetworkUI()    
