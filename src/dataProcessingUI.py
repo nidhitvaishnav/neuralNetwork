@@ -64,7 +64,7 @@ if __name__ == '__main__':
         inputFilePath = str(sys.argv[1])
         outputFilePath = str(sys.argv[2])
     else:
-        inputFilePath = ' '
+        inputFilePath = 'https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data'
 #         inputFilePath = 'https://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data'
 #         inputFilePath = 'https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data'
 #         inputFilePath = '../dataset/trDataset.csv'

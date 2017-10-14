@@ -14,11 +14,9 @@ class MyUtility:
         trainingDataFrame =inputDataFrame.sample(\
                                         frac=float(trainingPercent)/float(100),\
                                         random_state = 1)
-        #print(inputDataFrame.shape)
-        #print(trainingdf.shape)
+
         testingDataFrame = inputDataFrame.loc[~inputDataFrame.index.isin(\
                                                     trainingDataFrame.index)]
-        #print(testingdf.shape)
         return trainingDataFrame,testingDataFrame
 #|------------------------splitDataset -ends-----------------------------------|
 #|-----------------------------------------------------------------------------|
@@ -26,15 +24,9 @@ class MyUtility:
 #|-----------------------------------------------------------------------------|
     def createNestedDict(self, myDict, value, *path):
         """
-        
+        it can create nested dictionary
         """
-        #debug
-        print ('path = {} '.format(path))
-        #debug -ends
         for level in path[:-1]:
-            #debug
-            print ('level = {} '.format(level))
-            #debug -ends
             myDict = myDict.setdefault(level, {})
         #for level -ends
         dict[path[-1]]=value

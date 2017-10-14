@@ -33,10 +33,6 @@ class NeuralNetworkUI:
         myIO = MyIO()
         inputDataFrame = myIO.inputProcessedCSV(filePath = inputFilePath)
         headerList = inputDataFrame.columns.values
-#         #debug
-#         print ('inputDataFrame =\n {} '.format(inputDataFrame))
-#         print ('headerList =\n {}'.format(headerList))
-#         #debug -ends 
         
         #1. split dataset into training and testing dataset\
         myUtility = MyUtility()
@@ -48,22 +44,18 @@ class NeuralNetworkUI:
         uniqueClasses = inputDataFrame['class'].unique()
         numOfUniqueClasses = uniqueClasses.size
         
-#         #debug
-#         print ('numOfUniqueClasses = {} '.format(numOfUniqueClasses))
-#         #debug -ends
-        
         trainingDataArr = trainingDataFrame.values
         testingDataArr = testingDataFrame.values
         
-        trainingAtrArr, trainingClassArr, trainingAtrHeader = myUtility.segregateAttributesAndClass(inputArr = trainingDataArr, inputHeader = headerList)
-        testingAtrArr, testingClassArr, testingAtrHeader = myUtility.segregateAttributesAndClass(inputArr = testingDataArr, inputHeader = headerList)
-#         
-#         #debug
-#         print ('trainingAtrArr = {} '.format(trainingAtrArr.shape))
-#         print("trainingClassArr = {}".format(trainingClassArr.shape))
-#         print ('testingAtrArr = {} '.format(testingAtrArr.shape))
-#         print("testingClassArr = {}".format(testingClassArr.shape))
-#         #debug -ends
+        trainingAtrArr, trainingClassArr, trainingAtrHeader = \
+                                    myUtility.segregateAttributesAndClass(\
+                                                inputArr = trainingDataArr,\
+                                                inputHeader = headerList)
+        testingAtrArr, testingClassArr, testingAtrHeader =\
+                                 myUtility.segregateAttributesAndClass(\
+                                                    inputArr = testingDataArr,\
+                                                    inputHeader = headerList)
+
         
         nRows, nCols = trainingDataArr.shape
         
@@ -72,18 +64,6 @@ class NeuralNetworkUI:
                                        nNeurons = nNeurons, \
                                        nOutputs = numOfUniqueClasses)
         
-#         #debug
-#         print ('networkDict =\n {} '.format(neuralNetwork.networkDict))
-# #         print ('outputWeightDict =\n {} '.format(neuralNetwork.outputWeightDict))
-#         #debug -ends
-#         
-#         #3. forword propogation
-#         outputs = neuralNetwork.forwardPropagation(inputRow = trainingDataArr[0])
-#         #debug
-#         print ('=========================================================')
-#         print ('outputs = {} '.format(outputs))
-#         print ('=========================================================')
-#         #debug -ends
 
         #4. back propogation
 #         neuralNetwork.findBackwardPropagationError(targetValue = [1,0,0])
@@ -92,11 +72,17 @@ class NeuralNetworkUI:
                                             nIteration = maxItr,\
                                             numOfUniqueClasses=numOfUniqueClasses, \
                                             learningRate=0.5)
-        trainingPredictedOPArr = neuralNetwork.predictDataset(testingDataSet = trainingDataArr)
-        testingPredictedOPArr = neuralNetwork.predictDataset(testingDataSet = testingDataArr)
+        trainingPredictedOPArr = neuralNetwork.predictDataset(\
+                                            testingDataSet = trainingDataArr)
+        testingPredictedOPArr = neuralNetwork.predictDataset(\
+                                            testingDataSet = testingDataArr)
         
-        trainingError =  neuralNetwork.meanSquareError(targetArr = trainingClassArr, predictedOutputArr = trainingPredictedOPArr)
-        testingError = neuralNetwork.meanSquareError(targetArr = testingClassArr, predictedOutputArr = testingPredictedOPArr)
+        trainingError =  neuralNetwork.meanSquareError(\
+                                    targetArr = trainingClassArr,\
+                                    predictedOutputArr = trainingPredictedOPArr)
+        testingError = neuralNetwork.meanSquareError(\
+                                    targetArr = testingClassArr,\
+                                     predictedOutputArr = testingPredictedOPArr)
         
         #debug
         print ("\nAfter training neural network:\n")
@@ -119,7 +105,7 @@ if __name__ == '__main__':
         nHiddenLayers = int(sys.argv[4])
         nNeurons = int(sys.argv[5])
     else:
-        inputFilePath = '../dataset/refinedAdultData.csv'
+        inputFilePath = '../dataset/processedTrDataset.csv'
         trainingPercent = 80
         maxItr = 10
         nHiddenLayers = 2

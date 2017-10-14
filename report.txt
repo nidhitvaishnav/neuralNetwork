@@ -1,0 +1,49 @@
+- SHIVANI THAKKAR (sdt170030)
+- NIDHI VAISHNAV (ntv170030)
+
+Preprocessing 
+
+1) In preprocessing, we have removed the missing values first. Then we have converted all categorical/nominal attributes to
+   numerical attributes. After that all attributes are normalized.
+
+
+Neural Network implementation
+
+1) Neural Network implementation takes into account various parameters like the training testing split, number of hidden
+   layers, number of neurons in each hidden layer, number of iterations and the learning rate.
+
+2) By testing neural network on given three datasets, we observed that if number of iterations increases, it leads to low
+   mean square error. Number of hidden layers also plays an important role. If there are many hidden layers, itt leads to 
+   overfitting. So number of hidden layers should be intermediate. If learning rate is too low, it takes long time to 
+   converge. If learning rate is too high, accuracy gets affected. We have kept intermediate learning rate.
+
+
+The results are demonstrated in the screenshots attached.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
