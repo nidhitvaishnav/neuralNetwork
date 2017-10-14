@@ -1,6 +1,5 @@
 import numpy as np
 import random
-from collections import defaultdict
 import copy
 
 class NeuralNetwork:        
@@ -32,7 +31,7 @@ class NeuralNetwork:
         keys=["weight", "output", "delta"]
         self.networkDict={ name:{ key:[] for key in keys}\
                                              for name in layerNames}
-        print ('networkDict = {} '.format(self.networkDict))
+#         print ('networkDict = {} '.format(self.networkDict))
         
 #         self.networkDict = defaultdict(list)
 #         self.outputWeightDict = defaultdict(list)
@@ -285,12 +284,13 @@ class NeuralNetwork:
         given function creates a neural network after initialization
         """
         for currentIteration in range(nIteration):
-            totalError=0
+            trainingError=0
             for rowIndex, currentRow in enumerate(trainingDataArr):
                 outputs = self.forwardPropagation(inputRow = currentRow, iterationCount =currentIteration, rowCount = rowIndex)
+                
                 targetOutput = [0 for i in range(numOfUniqueClasses)]
                 targetOutput[int(currentRow[-1])] = 1
-                totalError+=sum([(targetOutput[i]-outputs[i])**2 for i in range(len(targetOutput))])
+                trainingError+=sum([(targetOutput[i]-outputs[i])**2/len(targetOutput) for i in range(len(targetOutput))])
 #                 #debug
 #                 print ('%%%%%%%%%%%%%%%%%%%%% itr = {}, row={} begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%'.format(currentIteration, rowIndex))
 #                 print ('networkDict:\n {}'.format(self.networkDict))        
@@ -304,7 +304,7 @@ class NeuralNetwork:
                 self.weightUpdate(inputRow = currentRow, learningRate = learningRate)
             #for currentRow -ends
         #for currentIteration -ends
-                
+        return trainingError        
 #|------------------------trainNetwork -ends-----------------------------------|
 #|-----------------------------------------------------------------------------|
 # predictDataset
@@ -323,5 +323,40 @@ class NeuralNetwork:
                 predictErrorCount+=1    
             #if rowOutput -ends
         #for rowIndex, currentRow -ends
-        return outputList, predictErrorCount        
-#|------------------------predictDataset -ends----------------------------------|        
+        outputArr = np.array(outputList)
+        return outputArr        
+#|------------------------predictDataset -ends---------------------------------| 
+#|-----------------------------------------------------------------------------|
+# meanSquareError
+#|-----------------------------------------------------------------------------|
+    def meanSquareError(self, targetArr, predictedOutputArr):
+        """
+        given function finds mean square error
+        E(w) = 1/2*sigma(t-o)^2
+        """
+        return np.square(targetArr - predictedOutputArr).mean()   
+#|------------------------meanSquareError -ends--------------------------------|   
+#|-----------------------------------------------------------------------------|
+# printNeuralNetworkWeights
+#|-----------------------------------------------------------------------------|
+    def printNeuralNetworkWeights(self, headerList):
+        """
+        print weights of neural network
+        """
+        #printing input layer
+        print ('layer{} : {}'.format(0, "Input Layer"))
+        for index in range(0, len(headerList)):
+            print ('\t Neuron{} weights : {}'.format(index, 0))
+        #for index -ends
+        print ('\n')
+        #printing hidden and output layers
+        for layerIndex, layer in enumerate(sorted(self.networkDict.keys())):
+            print ('layer{} : {}'.format(layerIndex+1, layer))
+            for neuronIndex, neuronWeight in enumerate(self.networkDict[layer]['weight']):
+                print ('\t Neuron{} weights : {}'.format(neuronIndex, neuronWeight))
+            #for neuronIndex -ends
+            print ('\n')
+        #for layerIndex -ends
+    
+#|------------------------printNeuralNetworkWeights -ends----------------------|    
+ 

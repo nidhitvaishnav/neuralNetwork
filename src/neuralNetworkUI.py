@@ -27,15 +27,16 @@ class NeuralNetworkUI:
         5. train network
             a. update weights
         6. predict
+        7. find mean square errors
         """
         #0. read dataset
         myIO = MyIO()
         inputDataFrame = myIO.inputProcessedCSV(filePath = inputFilePath)
         headerList = inputDataFrame.columns.values
-        #debug
-        print ('inputDataFrame =\n {} '.format(inputDataFrame))
-        print ('headerList =\n {}'.format(headerList))
-        #debug -ends 
+#         #debug
+#         print ('inputDataFrame =\n {} '.format(inputDataFrame))
+#         print ('headerList =\n {}'.format(headerList))
+#         #debug -ends 
         
         #1. split dataset into training and testing dataset\
         myUtility = MyUtility()
@@ -47,15 +48,15 @@ class NeuralNetworkUI:
         uniqueClasses = inputDataFrame['class'].unique()
         numOfUniqueClasses = uniqueClasses.size
         
-        #debug
-        print ('numOfUniqueClasses = {} '.format(numOfUniqueClasses))
-        #debug -ends
+#         #debug
+#         print ('numOfUniqueClasses = {} '.format(numOfUniqueClasses))
+#         #debug -ends
         
         trainingDataArr = trainingDataFrame.values
         testingDataArr = testingDataFrame.values
         
-#         trainingAtrArr, trainingClassArr, trainingAtrHeader = myUtility.segregateAttributesAndClass(inputArr = trainingDataArr, inputHeader = headerList)
-#         testingAtrArr, testingClassArr, testingAtrHeader = myUtility.segregateAttributesAndClass(inputArr = testingDataArr, inputHeader = headerList)
+        trainingAtrArr, trainingClassArr, trainingAtrHeader = myUtility.segregateAttributesAndClass(inputArr = trainingDataArr, inputHeader = headerList)
+        testingAtrArr, testingClassArr, testingAtrHeader = myUtility.segregateAttributesAndClass(inputArr = testingDataArr, inputHeader = headerList)
 #         
 #         #debug
 #         print ('trainingAtrArr = {} '.format(trainingAtrArr.shape))
@@ -86,10 +87,22 @@ class NeuralNetworkUI:
 
         #4. back propogation
 #         neuralNetwork.findBackwardPropagationError(targetValue = [1,0,0])
-        neuralNetwork.trainNetwork(trainingDataArr = trainingDataArr, nIteration = 1000, numOfUniqueClasses=3, learningRate=0.9)
-        predictedOutputList, predictionError = neuralNetwork.predictDataset(testingDataSet = testingDataArr)
+        trainingError = neuralNetwork.trainNetwork(\
+                                            trainingDataArr = trainingDataArr,\
+                                            nIteration = maxItr,\
+                                            numOfUniqueClasses=numOfUniqueClasses, \
+                                            learningRate=0.5)
+        trainingPredictedOPArr = neuralNetwork.predictDataset(testingDataSet = trainingDataArr)
+        testingPredictedOPArr = neuralNetwork.predictDataset(testingDataSet = testingDataArr)
+        
+        trainingError =  neuralNetwork.meanSquareError(targetArr = trainingClassArr, predictedOutputArr = trainingPredictedOPArr)
+        testingError = neuralNetwork.meanSquareError(targetArr = testingClassArr, predictedOutputArr = testingPredictedOPArr)
+        
         #debug
-        print ('predictionError = {} '.format(predictionError))
+        print ("\nAfter training neural network:\n")
+        neuralNetwork.printNeuralNetworkWeights(headerList = trainingAtrHeader)
+        print ('\ntrainingError = {}'.format(trainingError))
+        print ('testingError = {} '.format(testingError))
         #debug -ends
 #|------------------------createNeuralNetwork -ends----------------------------|    
 
@@ -98,28 +111,17 @@ class NeuralNetworkUI:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
     if len(sys.argv)>1:
-        inputFilePath = sys.argv[1]
-        trainingPercent = sys.argv[2]
-        maxItr = sys.argv[3]
-        nHiddenLayers = sys.argv[4]
-        nNeurons = sys.argv[5]
+        inputFilePath = str(sys.argv[1])
+        trainingPercent = float(sys.argv[2])
+        maxItr = int(sys.argv[3])
+        nHiddenLayers = int(sys.argv[4])
+        nNeurons = int(sys.argv[5])
     else:
-        inputFilePath = '../dataset/processedTrDataset.csv'
+        inputFilePath = '../dataset/refinedAdultData.csv'
         trainingPercent = 80
-        maxItr = 200
+        maxItr = 10
         nHiddenLayers = 2
         nNeurons = 2
     #if len(sys.argv) -ends

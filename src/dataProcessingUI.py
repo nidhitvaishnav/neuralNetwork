@@ -22,9 +22,9 @@ class DataProcessingUI:
         myIO = MyIO()
         inputDataFrame = myIO.inputCSVFromURL(filePath = inputFilePath)
 
-        #debug
-        print ('inputDataFrame = {} '.format(inputDataFrame))
-        #debug -ends
+#         #debug
+#         print ('inputDataFrame = {} '.format(inputDataFrame))
+#         #debug -ends
         dataProcess = DataPreprocess()
         #creating dummy headers and adding them to dataframe
         headerList = dataProcess.provideHeaders(inputDataFrame =inputDataFrame)
@@ -33,16 +33,16 @@ class DataProcessingUI:
         #removing null values
         nullRemovedDataFrame = dataProcess.removeNullValues(inputDataFrame = \
                                                             inputDataFrame)
-        
-        #scaling integer and float values
-        scaledDataFrame = dataProcess.scaleData(inputDataFrame =\
-                                                         nullRemovedDataFrame)
         #converting catgorical values into integer values
-        refinedDataFrame = dataProcess.categoricalToNumericalConversion(\
-                                            dataFrame = scaledDataFrame)
-        #debug
-        print ('refinedDataFrame =\n {} '.format(refinedDataFrame))
-        #debug -ends
+        numericalDataFrame = dataProcess.categoricalToNumericalConversion(\
+                                            dataFrame = nullRemovedDataFrame)
+        #scaling integer and float values
+        refinedDataFrame = dataProcess.scaleData(inputDataFrame =\
+                                                         numericalDataFrame)
+        
+#         #debug
+#         print ('refinedDataFrame =\n {} '.format(refinedDataFrame))
+#         #debug -ends
         
         #writing refined csv file
         myIO.writeCSV(inputDataFrame = refinedDataFrame, outputFilePath = \
@@ -61,10 +61,10 @@ if __name__ == '__main__':
     write it into outputFile path (default: ../dataset/processedTrDataset.csv)
     '''
     if len(sys.argv)>1:
-        inputFilePath = sys.argv[1]
-        outputFilePath = sys.argv[2]
+        inputFilePath = str(sys.argv[1])
+        outputFilePath = str(sys.argv[2])
     else:
-        inputFilePath = 'https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data'
+        inputFilePath = ' '
 #         inputFilePath = 'https://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data'
 #         inputFilePath = 'https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data'
 #         inputFilePath = '../dataset/trDataset.csv'
@@ -75,3 +75,5 @@ if __name__ == '__main__':
     dataProcessingUI = DataProcessingUI()
     refinedDataFrame = dataProcessingUI.dataProcessing(inputFilePath = inputFilePath,\
                                      outputFilePath = outputFilePath)
+
+    print ('data pre processing has been completed successfully')

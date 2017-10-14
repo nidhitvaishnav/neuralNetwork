@@ -4,3 +4,8 @@ src/dataPreprocess.pyc
 src/myIO.pyc
 src/myUtility.pyc
 src/neuralNetwork.pyc
+src/__pycache__
+dataset/refinedAdult.csv
+dataset/refinedAdultData.csv
+dataset/refinedCar.csv
+dataset/refinedIris.csv
