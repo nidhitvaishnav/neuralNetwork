@@ -54,10 +54,15 @@ class NeuralNetworkUI:
         trainingDataArr = trainingDataFrame.values
         testingDataArr = testingDataFrame.values
         
-        #debug
-        print ('trainingDataArr = \n{} '.format(trainingDataArr.shape))
-        print("TestingDataArr = \n{}".format(testingDataArr.shape))
-        #debug -ends
+#         trainingAtrArr, trainingClassArr, trainingAtrHeader = myUtility.segregateAttributesAndClass(inputArr = trainingDataArr, inputHeader = headerList)
+#         testingAtrArr, testingClassArr, testingAtrHeader = myUtility.segregateAttributesAndClass(inputArr = testingDataArr, inputHeader = headerList)
+#         
+#         #debug
+#         print ('trainingAtrArr = {} '.format(trainingAtrArr.shape))
+#         print("trainingClassArr = {}".format(trainingClassArr.shape))
+#         print ('testingAtrArr = {} '.format(testingAtrArr.shape))
+#         print("testingClassArr = {}".format(testingClassArr.shape))
+#         #debug -ends
         
         nRows, nCols = trainingDataArr.shape
         
@@ -66,23 +71,26 @@ class NeuralNetworkUI:
                                        nNeurons = nNeurons, \
                                        nOutputs = numOfUniqueClasses)
         
-        #debug
-        print ('networkDict =\n {} '.format(neuralNetwork.networkDict))
-#         print ('outputWeightDict =\n {} '.format(neuralNetwork.outputWeightDict))
-        #debug -ends
-        
-        #3. forword propogation
-        outputs = neuralNetwork.forwardPropagation(inputRow = trainingDataArr[0])
-        #debug
-        print ('=========================================================')
-        print ('outputs = {} '.format(outputs))
-        print ('=========================================================')
-        #debug -ends
+#         #debug
+#         print ('networkDict =\n {} '.format(neuralNetwork.networkDict))
+# #         print ('outputWeightDict =\n {} '.format(neuralNetwork.outputWeightDict))
+#         #debug -ends
+#         
+#         #3. forword propogation
+#         outputs = neuralNetwork.forwardPropagation(inputRow = trainingDataArr[0])
+#         #debug
+#         print ('=========================================================')
+#         print ('outputs = {} '.format(outputs))
+#         print ('=========================================================')
+#         #debug -ends
 
         #4. back propogation
-        neuralNetwork.findBackwardPropagationError(targetValue = [1,0,0])
-        
-
+#         neuralNetwork.findBackwardPropagationError(targetValue = [1,0,0])
+        neuralNetwork.trainNetwork(trainingDataArr = trainingDataArr, nIteration = 1000, numOfUniqueClasses=3, learningRate=0.9)
+        predictedOutputList, predictionError = neuralNetwork.predictDataset(testingDataSet = testingDataArr)
+        #debug
+        print ('predictionError = {} '.format(predictionError))
+        #debug -ends
 #|------------------------createNeuralNetwork -ends----------------------------|    
 
 

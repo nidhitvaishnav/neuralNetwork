@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from collections import defaultdict
+import copy
 
 class NeuralNetwork:        
 #|-----------------------------------------------------------------------------|
@@ -66,31 +67,40 @@ class NeuralNetwork:
 #|-----------------------------------------------------------------------------|
 # forwardPropagation
 #|-----------------------------------------------------------------------------|
-    def forwardPropagation(self, inputRow):
+    def forwardPropagation(self, inputRow, iterationCount, rowCount):
         """
         performing forward propagation
         1. for each neurons, finding w*x 
         2. finding sigmoid function
         3. passing this result of sigmoid function to all other neurons as input
         """
-        modifiedInputs = []
+        inputs = copy.deepcopy(inputRow)
         for currentLayer in sorted(self.networkDict.keys()):
-            inputs = inputRow
             newInputs = []
-            #debug
-            print ('currentLayer = {} '.format(currentLayer))
-            #debug -ends
- 
-            for myNeuron in self.networkDict[currentLayer]['weight']:
-                #debug
-                print ('myNeuron = {} '.format(myNeuron))
-                #debug -ends
+#             #debug
+#             print ('currentLayer = {} '.format(currentLayer))
+#             #debug -ends
+            
+            for neuronIndex, myNeuron in enumerate(self.networkDict[currentLayer]['weight']):
+#                 #debug
+#                 print ('myNeuron = {} '.format(myNeuron))
+#                 #debug -ends
+                
                 activationVal = self._activateNeuron(myNeuron, inputs)
-                self.networkDict[currentLayer]['output']=\
-                                        self._sigmoidActivation(activationVal)
-                newInputs.append(self.networkDict[currentLayer]['output'])
+                sigmoidActVal = self._sigmoidActivation(activationVal)
+                if (iterationCount==0 and rowCount==0):
+                    self.networkDict[currentLayer]['output'].append(sigmoidActVal)
+                else:
+                    self.networkDict[currentLayer]['output'][neuronIndex]=sigmoidActVal
+#                 #debug
+#                 print ('op= {} '.format(self.networkDict[currentLayer]['output']))
+#                 #debug -ends
+                newInputs.append(sigmoidActVal)
+#                 #debug
+#                 print ('newInputs = {} '.format(newInputs))
+#                 #debug -ends
             #for myNeuron -ends
-            inputs = newInputs
+            inputs = copy.deepcopy(newInputs)
         #for currentLayer -ends
 #         #debug
 #         print ('self.networkDict = {} '.format(self.networkDict))
@@ -108,14 +118,18 @@ class NeuralNetwork:
         output is an activation output of float type 
         """
         #adding bias value 
-        activationOutput = neuronWeight[0]
+        activationOutput = neuronWeight[-1]
         #adding W*X
+#         #debug
+#         print ('neuronWeight = {} '.format(neuronWeight))
+#         print ('inputRow = {}'.format(inputRow))
+#         #debug -ends
         for myIndex in range(len(neuronWeight)-1):
             activationOutput+=neuronWeight[myIndex]*inputRow[myIndex]
         #for myIndex -ends
-        #debug
-        print ('activationOutput = {} '.format(activationOutput))
-        #debug -ends
+#         #debug
+#         print ('activationOutput = {} '.format(activationOutput))
+#         #debug -ends
         return activationOutput
 
 #|------------------------__activateNeuron -ends-------------------------------|    
@@ -141,7 +155,7 @@ class NeuralNetwork:
 #|-----------------------------------------------------------------------------|
 # findBackwardPropagationError
 #|-----------------------------------------------------------------------------|
-    def findBackwardPropagationError(self, targetValue):
+    def findBackwardPropagationError(self, targetValue, iterationCount, rowCount):
         """
         
         """
@@ -151,43 +165,43 @@ class NeuralNetwork:
             #if it is output layer, than compare output with target itself
             #else compare it with next layer values
             if (layerIndex==len(self.networkDict.keys())-1):
-                for neuronIndex in range(len(self.networkDict['outputLayer']['weight'])):
+                for neuronIndex, neuronOutput in enumerate(self.networkDict['outputLayer']['output']):
 #                     #debug
-#                     print ('neuron weight= {} '.format(self.networkDict['outputLayer']['weight']))
-#                     print ('neuron output= {} '.format(self.networkDict['outputLayer']['output']))
-                    print ('index = 2, outputLayer')
-                    #debug -ends
-                    errorList.append(targetValue[neuronIndex]-\
-                                    self.networkDict['outputLayer']['output'])
+#                     print ('size of output = {}'.format(len(self.networkDict['outputLayer']['output'])))
+#                     print ("targetValue[neuronIndex] = {}".format(targetValue[neuronIndex]))
+#                     print ("neuronOutput = {}".format(neuronOutput))
+#                     #debug -ends
+                    errorList.append(targetValue[neuronIndex]-neuronOutput)
                 #for neuronIndex -ends
 
             else:
-                #debug
-                print ('### layerIndex = {}### '.format(layerIndex))
-                #debug -ends
+#                 #debug
+#                 print ('### layerIndex = {}### '.format(layerIndex))
+#                 #debug -ends
                 for neuronIndex in range(len(self.networkDict['hiddenLayer'+str(layerIndex)]['weight'])):
                     error=0.0
-                    print('+++++++++')
+#                     print('+++++++++')
                     if (layerIndex != (len(self.networkDict.keys())-2)):
-                        #debug
-                        print ('total keys: {}'.format(self.networkDict.keys()))
-                        print ('layerIndex = {} '.format(layerIndex))
-                        #debug -ends
-                        for nextLayerNeuron in self.networkDict['hiddenLayer'+str(layerIndex+1)]['weight']:
-                            #debug
-                            print ('nextLayerNeuron = {} '.format(nextLayerNeuron))
-                            print("{}".format(self.networkDict['hiddenLayer'+str(layerIndex+1)]['delta']))
-                            #debug -ends
-                            #TODO: check for the multiplication between list and float
-                            error+=nextLayerNeuron*float(self.networkDict['hiddenLayer'+str(layerIndex+1)]['delta'])
+#                         #debug
+#                         print ('total keys: {}'.format(self.networkDict.keys()))
+#                         print ('layerIndex = {} '.format(layerIndex))
+#                         #debug -ends
+                        for nextLayerNeuronWeight in self.networkDict['hiddenLayer'+str(layerIndex+1)]['weight']:
+#                             #debug
+#                             print ('nextLayerNeuron = {} '.format(nextLayerNeuronWeight))
+#                             print("{}".format(self.networkDict['hiddenLayer'+str(layerIndex+1)]['delta']))
+#                             #debug -ends
+                            error+=float(nextLayerNeuronWeight[neuronIndex])*float(self.networkDict['hiddenLayer'+str(layerIndex+1)]['delta'][neuronIndex])
                             errorList.append(error)
                         #for nextNeuronIndex -ends
                     else:
-                        for nextLayerNeuron in self.networkDict['outputLayer']['weight']:
-                            #debug
-                            print ('delta= {} '.format(self.networkDict['outputLayer']['delta']))
-                            #debug -ends
-                            error+=nextLayerNeuron*float(self.networkDict['outputLayer']['delta'])
+                        for nextLayerNeuronWeight in self.networkDict['outputLayer']['weight']:
+#                             #debug
+#                             print ('neuronIdex = {}'.format(neuronIndex))
+#                             print ('nextLayerNeuronIndex = {}: nextLayerNeuron = {}'.format(neuronIndex, nextLayerNeuronWeight))
+#                             print ('delta= {} '.format(self.networkDict['outputLayer']['delta']))
+#                             #debug -ends
+                            error+=float(nextLayerNeuronWeight[neuronIndex])*float(self.networkDict['outputLayer']['delta'][neuronIndex])
                             errorList.append(error)
                         #for nextNeuronIndex -ends
                     #if layerIndex -ends
@@ -195,19 +209,119 @@ class NeuralNetwork:
             #if layerIndex -ends
             #asigning delta based on error value
             if (layerIndex!=len(self.networkDict.keys())-1):
-                for neuronIndex in range(len(self.networkDict['hiddenLayer'+str(layerIndex)])):
-                    self.networkDict['hiddenLayer'+str(layerIndex)]['delta']\
-                            =errorList[neuronIndex]\
+                for neuronIndex in range(len(self.networkDict['hiddenLayer'+str(layerIndex)]['output'])):
+#                     #debug
+#                     print ('---neuronIndex = {}, layerIndex = {}--- '.format(neuronIndex, layerIndex))
+#                     print ('delta = {}'.format(self.networkDict['hiddenLayer'+str(layerIndex)]['delta']))
+#                     print ('errorList = {}'.format(errorList[neuronIndex]))
+#                     print ('output = {}'.format(self.networkDict[\
+#                                         'hiddenLayer'+str(layerIndex)]['output'][neuronIndex]))
+#                     #debug -ends
+                    if (iterationCount==0 and rowCount==0):
+                        self.networkDict['hiddenLayer'+str(layerIndex)]['delta'].append(errorList[neuronIndex]\
                             *self._transferDerivative(self.networkDict[\
-                                        'hiddenLayer'+str(layerIndex)]['output'])
+                                        'hiddenLayer'+str(layerIndex)]['output'][neuronIndex]))
+                    else:
+                        self.networkDict['hiddenLayer'+str(layerIndex)]['delta'][neuronIndex] =errorList[neuronIndex]\
+                            *self._transferDerivative(self.networkDict[\
+                                        'hiddenLayer'+str(layerIndex)]['output'][neuronIndex])
                 #for neuralIndex -ends
             else:
-                for neuronIndex in range(len(self.networkDict['outputLayer'])):
-                    self.networkDict['outputLayer']['delta']\
-                            =errorList[neuronIndex]*self._transferDerivative(\
-                                    self.networkDict['outputLayer']['output'])
+                for neuronIndex, neuronOutput in enumerate(self.networkDict['outputLayer']['output']):
+#                     #debug
+#                     print ('-----------------------------------------------')
+#                     print ('neuronIndex = {} '.format(neuronIndex))
+#                     print ('errorList[neuronIndex] = {}'.format(errorList[neuronIndex]))
+#                     print ('current output = {}'.format(neuronOutput))
+#                     #debug -ends
+                    if (iterationCount==0 and rowCount==0):
+                        self.networkDict['outputLayer']['delta'].append(errorList[neuronIndex]*self._transferDerivative(\
+                                    neuronOutput))
+                    else:
+                        self.networkDict['outputLayer']['delta'][neuronIndex] \
+                            = errorList[neuronIndex]*self._transferDerivative(neuronOutput)
                 #for neuralIndex -ends
             #if layerIndex -ends
         #for layerIndex -ends
         
-#|------------------------findBackwardPropagationError -ends----------------------------------|    
+#|------------------------findBackwardPropagationError -ends-------------------|    
+#|-----------------------------------------------------------------------------|
+# weightUpdate
+#|-----------------------------------------------------------------------------|
+    def weightUpdate(self, inputRow, learningRate):
+        """
+        This is to train network.
+        newWeights = weight + learningRate * error * input
+        """
+        for layerIndex, layer in enumerate(sorted(self.networkDict.keys())):
+#             rowSize = len(inputRow)
+#             inputs=inputRow[0:rowSize-2]
+            inputs = inputRow[:-1]
+            if layer!='hiddenLayer0':
+                inputs = [neuronOutput for neuronOutput in self.networkDict["hiddenLayer"+str(layerIndex-1)]['output']]
+                #for neuronOutput -ends
+            #if layer -ends
+            for neuronIndex, neuronDelta in enumerate(self.networkDict[layer]['delta']):
+#                 #debug
+#                 print ('neuronIndex = {} neuronDelta = {} '.format(neuronIndex, neuronDelta))
+#                 #debug -ends
+                for atr in range(len(inputs)):
+#                     #debug
+#                     print ('atr = {}, layer = {}'.format(atr, layer))
+#                     print ('------netorkDict = {}'.format(self.networkDict))
+#                     print ('weight in {} = {}'.format(layer, self.networkDict[layer]['weight']))
+#                     #debug -ends
+                    self.networkDict[layer]['weight'][neuronIndex][atr]+=learningRate*neuronDelta*inputs[atr]
+                #for atr -ends
+                self.networkDict[layer]['weight'][neuronIndex][-1]+=learningRate*neuronDelta
+            #for neuronIndex, euronDelta -ends
+        #for layer -ends
+#|------------------------weightUpdate -ends-----------------------------------|    
+#|-----------------------------------------------------------------------------|
+# trainNetwork
+#|-----------------------------------------------------------------------------|
+    def trainNetwork(self, trainingDataArr, nIteration, numOfUniqueClasses, learningRate=0.9):
+        """
+        given function creates a neural network after initialization
+        """
+        for currentIteration in range(nIteration):
+            totalError=0
+            for rowIndex, currentRow in enumerate(trainingDataArr):
+                outputs = self.forwardPropagation(inputRow = currentRow, iterationCount =currentIteration, rowCount = rowIndex)
+                targetOutput = [0 for i in range(numOfUniqueClasses)]
+                targetOutput[int(currentRow[-1])] = 1
+                totalError+=sum([(targetOutput[i]-outputs[i])**2 for i in range(len(targetOutput))])
+#                 #debug
+#                 print ('%%%%%%%%%%%%%%%%%%%%% itr = {}, row={} begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%'.format(currentIteration, rowIndex))
+#                 print ('networkDict:\n {}'.format(self.networkDict))        
+#                #debug -ends
+                self.findBackwardPropagationError(targetValue = targetOutput, iterationCount =currentIteration, rowCount = rowIndex)
+                #debug
+#                 print ('networkDict = \n{}'.format(self.networkDict))
+#                 print ('targetOutput = {}---------- '.format(targetOutput))
+#                 print ('%%%%%%%%%%%%%%%%%%%%% itr = {}, row={} ends %%%%%%%%%%%%%%%%%%%%%%%%%%%%%'.format(currentIteration, rowIndex))
+#                 #debug -ends
+                self.weightUpdate(inputRow = currentRow, learningRate = learningRate)
+            #for currentRow -ends
+        #for currentIteration -ends
+                
+#|------------------------trainNetwork -ends-----------------------------------|
+#|-----------------------------------------------------------------------------|
+# predictDataset
+#|-----------------------------------------------------------------------------|
+    def predictDataset(self, testingDataSet):
+        """
+        given function predicts output of test dataset
+        """
+        outputList = []
+        predictErrorCount = 0
+        for rowIndex, currentRow in enumerate(testingDataSet):
+            oneHotOutputs = self.forwardPropagation(inputRow = currentRow, iterationCount =0, rowCount = rowIndex)
+            rowOutput = oneHotOutputs.index(max(oneHotOutputs))
+            outputList.append(rowOutput)
+            if rowOutput != currentRow[-1]:
+                predictErrorCount+=1    
+            #if rowOutput -ends
+        #for rowIndex, currentRow -ends
+        return outputList, predictErrorCount        
+#|------------------------predictDataset -ends----------------------------------|        
